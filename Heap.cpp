@@ -12,22 +12,77 @@ void swap(int *array, int i, int j) {
 
 template<class T>
 Heap<T>::Heap() {
-
+    max_size = 100;
+    size = 0;
+    elements = new T[max_size];
 }
 
 template<class T>
 Heap<T>::Heap(int max_size) {
-
+    this->max_size = max_size;
+    size = 0;
+    elements = new T[max_size];
 }
 
 template<class T>
 void Heap<T>::ReheapUp(T value) {
+    if (size >= max_size) {
+        throw FullHeap();
+    }
+    elements[size] = value;
 
+    int currInd = size;
+
+    while (currInd != 0) {
+        int parentInd = (currInd - 1)/2;
+        if (elements[currInd] > elements[parentInd]) {
+            swap(elements, currInd, parentInd);
+            currInd = parentInd;
+        } else {
+            break;
+        }
+    }
+    ++size;
 }
 
 template<class T>
 T Heap<T>::ReheapDown() {
     T priority_value;
+    priority_value = elements[0];
+
+    elements[0] = elements[size - 1];
+    --size;
+
+    int currInd = 0;
+    int bottomInd = size - 1;
+
+    int leftInd = currInd*2 + 1;
+    int rightInd = currInd*2 + 2;
+    int maxChildInd;
+
+    while (currInd != bottomInd) {
+
+        if (leftInd == bottomInd) {
+            // If the bottom is the left child, then
+            // there is no right branch.  Left must be
+            // the max child.
+            maxChildInd = leftInd;
+        } else if (elements[leftInd] > elements[rightInd]) {
+            maxChildInd = leftInd;
+        } else {
+            maxChildInd = rightInd;
+        }
+
+        if (elements[currInd] < elements[maxChildInd]) {
+            swap(elements, currInd, maxChildInd);
+            currInd = maxChildInd;
+        } else {
+            break;
+        }
+
+        leftInd = currInd*2 + 1;
+        rightInd = currInd*2 + 2;
+    }
 
     return priority_value;
 }
